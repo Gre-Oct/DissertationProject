@@ -15,7 +15,3 @@ export const poseImages = {
     Triangle: triangle,
     //Shoulderstand: shoulderstand
 } 
-
-
-
- 

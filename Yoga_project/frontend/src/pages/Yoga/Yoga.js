@@ -39,6 +39,10 @@ function Yoga() {
   const [bestPerform, setBestPerform] = useState(0)
   const [currentPose, setCurrentPose] = useState('Tree')
   const [isStartPose, setIsStartPose] = useState(false)
+  //sequences
+  const [isSequence1, setIsStartSequence1] = useState(false)
+  const [isSequence2, setIsStartSequence2] = useState(false)
+  const [isSequence3, setIsStartSequence3] = useState(false)
 
   
   useEffect(() => {
@@ -134,16 +138,26 @@ function Yoga() {
       webcamRef.current.video.readyState === 4
     ) {
       let notDetected = 0 
+      let noseX = 0
+      let noseY = 0
       const video = webcamRef.current.video
       const pose = await detector.estimatePoses(video)
       const ctx = canvasRef.current.getContext('2d')
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       try {
         const keypoints = pose[0].keypoints 
+        //console.log('Keypoints:', keypoints);
         let input = keypoints.map((keypoint) => {
           if(keypoint.score > 0.4) {
             if(!(keypoint.name === 'left_eye' || keypoint.name === 'right_eye')) {
-              drawPoint(ctx, keypoint.x, keypoint.y, 8, 'rgb(255,255,255)')
+              if(keypoint.name == 'nose')
+              {
+                noseX = keypoint.x;
+                noseY = keypoint.y;
+                //console.log(noseX + ' | ' + noseY)
+              }
+              //console.log(currentPose);
+              drawPoint(currentPose, ctx, keypoint.x, keypoint.y, 8, 'rgb(255,255,255)', keypoint.name, noseX, noseY, 2, 35)
               let connections = keypointConnections[keypoint.name]
               try {
                 connections.forEach((connection) => {
@@ -164,15 +178,18 @@ function Yoga() {
           return [keypoint.x, keypoint.y]
         }) 
         if(notDetected > 4) {
-          skeletonColor = 'rgb(255,255,255)'
+          skeletonColor = 'rgb(0,255,255)'
           return
+        }
+        else {
+          skeletonColor = 'rgb(255,255,255)'
         }
         const processedInput = landmarks_to_embedding(input)
         const classification = poseClassifier.predict(processedInput)
 
         classification.array().then((data) => {         
           const classNo = CLASS_NO[currentPose]
-          console.log(data[0][classNo])
+          //console.log(data[0][classNo])
           if(data[0][classNo] > 0.97) {
             
             if(!flag) {
@@ -184,7 +201,7 @@ function Yoga() {
             skeletonColor = 'rgb(0,255,0)'
           } else {
             flag = false
-            skeletonColor = 'rgb(255,255,255)'
+            skeletonColor = 'rgb(255,0,0)'
             countAudio.pause()
             countAudio.currentTime = 0
           }
@@ -192,8 +209,6 @@ function Yoga() {
       } catch(err) {
         console.log(err)
       }
-      
-      
     }
   }
 
@@ -207,8 +222,39 @@ function Yoga() {
     clearInterval(interval)
   }
 
-    
+  function startSequence1(){
+    setIsStartSequence1(true)
+    console.log(isSequence1)
+    runMovenet()
+  }
 
+  function startSequence2(){
+    setIsStartSequence2(true)
+    runMovenet()
+  }
+
+  function startSequence3(){
+    setIsStartSequence3(true)
+    runMovenet()
+  }
+
+  function stopSequence1() {
+    setIsStartSequence1(false)
+    console.log(isSequence1)
+    clearInterval(interval)
+  }
+
+  function stopSequence2() {
+    setIsStartSequence2(false)
+    clearInterval(interval)
+  }
+
+  function stopSequence3() {
+    setIsStartSequence3(false)
+    clearInterval(interval)
+  }
+
+  //Normal poses
   if(isStartPose) {
     return (
       <div className="yoga-container">
@@ -262,6 +308,148 @@ function Yoga() {
       </div>
     )
   }
+  //sequence 1
+  if(isSequence1) {
+    return (
+      <div className="yoga-container">
+        <div className="performance-container">
+            <div className="pose-performance">
+              <h4>Pose Time: {poseTime} s</h4>
+            </div>
+            <div className="pose-performance">
+              <h4>Best: {bestPerform} s</h4>
+            </div>
+          </div>
+        <div>
+          
+          <Webcam 
+          width='640px'
+          height='480px'
+          id="webcam"
+          ref={webcamRef}
+          style={{
+            position: 'absolute',
+            left: 120,
+            top: 100,
+            padding: '0px',
+          }}
+        />
+          <canvas
+            ref={canvasRef}
+            id="my-canvas"
+            width='640px'
+            height='480px'
+            style={{
+              position: 'absolute',
+              left: 120,
+              top: 100,
+              zIndex: 1
+            }}
+          >
+          </canvas>
+        </div>
+        <button
+          onClick={stopSequence1}
+          className="secondary-btn"    
+        >Stop Sequence 1</button>
+      </div>
+    )
+  }
+  //Sequence 2
+  if(isSequence2) {
+    return (
+      <div className="yoga-container">
+        <div className="performance-container">
+            <div className="pose-performance">
+              <h4>Pose Time: {poseTime} s</h4>
+            </div>
+            <div className="pose-performance">
+              <h4>Best: {bestPerform} s</h4>
+            </div>
+          </div>
+        <div>
+          
+          <Webcam 
+          width='640px'
+          height='480px'
+          id="webcam"
+          ref={webcamRef}
+          style={{
+            position: 'absolute',
+            left: 120,
+            top: 100,
+            padding: '0px',
+          }}
+        />
+          <canvas
+            ref={canvasRef}
+            id="my-canvas"
+            width='640px'
+            height='480px'
+            style={{
+              position: 'absolute',
+              left: 120,
+              top: 100,
+              zIndex: 1
+            }}
+          >
+          </canvas>
+        </div>
+        <button
+          onClick={stopSequence2}
+          className="secondary-btn"    
+        >Stop Sequence 2</button>
+      </div>
+    )
+  }
+
+  //Sequence 3
+  if(isSequence3) {
+    return (
+      <div className="yoga-container">
+        <div className="performance-container">
+            <div className="pose-performance">
+              <h4>Pose Time: {poseTime} s</h4>
+            </div>
+            <div className="pose-performance">
+              <h4>Best: {bestPerform} s</h4>
+            </div>
+          </div>
+        <div>
+          
+          <Webcam 
+          width='640px'
+          height='480px'
+          id="webcam"
+          ref={webcamRef}
+          style={{
+            position: 'absolute',
+            left: 120,
+            top: 100,
+            padding: '0px',
+          }}
+        />
+          <canvas
+            ref={canvasRef}
+            id="my-canvas"
+            width='640px'
+            height='480px'
+            style={{
+              position: 'absolute',
+              left: 120,
+              top: 100,
+              zIndex: 1
+            }}
+          >
+          </canvas>
+        </div>
+        <button
+          onClick={stopSequence3}
+          className="secondary-btn"    
+        >Stop Sequence 3</button>
+      </div>
+    )
+  }
 
   return (
     <div
@@ -277,8 +465,24 @@ function Yoga() {
         />
       <button
           onClick={startYoga}
-          className="secondary-btn"    
+          className="secondary-btn"
         >Start Pose</button>
+
+      <button
+          onClick={startSequence1}
+          className="sequence-btn"    
+        >Sequence 1</button>
+      
+      <button
+          onClick={startSequence2}
+          className="sequence-btn"    
+        >Sequence 2</button>
+      
+      <button
+          onClick={startSequence3}
+          className="sequence-btn"    
+        >Sequence 3</button>
+
     </div>
   )
 }

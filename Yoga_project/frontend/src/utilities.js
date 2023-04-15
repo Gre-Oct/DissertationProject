@@ -1,5 +1,6 @@
 import * as posenet from "@tensorflow-models/posenet";
 import * as tf from "@tensorflow/tfjs";
+import { comparePoses } from './pose_comparison';
 
 const color = "aqua";
 const boundingBoxColor = "red";
@@ -64,39 +65,43 @@ function toTuple({ y, x }) {
   return [y, x];
 }
 
-export function drawPoint(ctx, y, x, r, color) {
+export function drawPoint(ctx, y, x, r, color, isMatching) {
   ctx.beginPath();
   ctx.arc(x, y, r, 0, 2 * Math.PI);
-  ctx.fillStyle = color;
+  //ctx.fillStyle = color;
+  ctx.fillStyle = isMatching ? "green" : "red";
   ctx.fill();
 }
 
 /**
  * Draws a line on a canvas, i.e. a joint
  */
-export function drawSegment([ay, ax], [by, bx], color, scale, ctx) {
+export function drawSegment([ay, ax], [by, bx], isMatching, color, scale, ctx) {
   ctx.beginPath();
   ctx.moveTo(ax * scale, ay * scale);
   ctx.lineTo(bx * scale, by * scale);
   ctx.lineWidth = lineWidth;
-  ctx.strokeStyle = color;
+  //ctx.strokeStyle = color;
+  ctx.strokeStyle = isMatching ? "green" : "red";
   ctx.stroke();
 }
 
 /**
  * Draws a pose skeleton by looking up all adjacent keypoints/joints
  */
-export function drawSkeleton(keypoints, minConfidence, ctx, scale = 1) {
+export function drawSkeleton(keypoints, minConfidence, ctx, targetKeypoints, scale = 1) {
+  const matchingInfo = comparePoses(keypoints, targetKeypoints, minConfidence);
   const adjacentKeyPoints = posenet.getAdjacentKeyPoints(
     keypoints,
     minConfidence
   );
 
   adjacentKeyPoints.forEach((keypoints) => {
+    const isMatching = matchingInfo.segments[keypoints[0].part][keypoints[1].part];
     drawSegment(
       toTuple(keypoints[0].position),
       toTuple(keypoints[1].position),
-      color,
+      isMatching,
       scale,
       ctx
     );
@@ -106,16 +111,18 @@ export function drawSkeleton(keypoints, minConfidence, ctx, scale = 1) {
 /**
  * Draw pose keypoints onto a canvas
  */
-export function drawKeypoints(keypoints, minConfidence, ctx, scale = 1) {
+export function drawKeypoints(keypoints, minConfidence, ctx, targetKeypoints, scale = 1) {
+  const matchingInfo = comparePoses(keypoints, targetKeypoints, minConfidence);
   for (let i = 0; i < keypoints.length; i++) {
     const keypoint = keypoints[i];
-
+  
     if (keypoint.score < minConfidence) {
       continue;
     }
-
+  
     const { y, x } = keypoint.position;
-    drawPoint(ctx, y * scale, x * scale, 3, color);
+    const isMatching = matchingInfo.keypoints[keypoint.part];
+    drawPoint(ctx, y * scale, x * scale, 3, isMatching);
   }
 }
 
