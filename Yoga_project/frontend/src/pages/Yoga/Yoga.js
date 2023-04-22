@@ -27,6 +27,8 @@ let interval
 // the pose as correct(probability more than threshold)
 let flag = false
 
+// Counter used to move through the poses of a sequence
+let sequenceStep = 0
 
 function Yoga() {
   const webcamRef = useRef(null)
@@ -34,7 +36,7 @@ function Yoga() {
 
 
   const [startingTime, setStartingTime] = useState(0)
-  const [currentTime, setCurrentTime] = useState(0)
+  const [currentTime, setCurrentTime] = useState(new Date(Date()).getTime())
   const [poseTime, setPoseTime] = useState(0)
   const [bestPerform, setBestPerform] = useState(0)
   const [currentPose, setCurrentPose] = useState('Tree')
@@ -44,6 +46,36 @@ function Yoga() {
   const [isSequence2, setIsStartSequence2] = useState(false)
   const [isSequence3, setIsStartSequence3] = useState(false)
 
+  // Each pose in a sequence is a reference to the pose list
+  // Note that the reference is interchangeable with strings such that output should be the same
+  // Such as:
+  // poseList[0]
+  // OR
+  // 'Tree'
+
+  const sequence1Poses = [
+    poseList[0],
+    poseList[1],
+    poseList[2],
+    poseList[1],
+    poseList[0]
+  ]
+  
+  const sequence2Poses = [
+    poseList[2],
+    poseList[1],
+    poseList[0],
+    poseList[1],
+    poseList[2]
+  ]
+
+  const sequence3Poses = [
+    poseList[1],
+    poseList[0],
+    poseList[2],
+    poseList[0],
+    poseList[1]
+  ]
   
   useEffect(() => {
     const timeDiff = (currentTime - startingTime)/1000
@@ -57,9 +89,18 @@ function Yoga() {
 
 
   useEffect(() => {
-    setCurrentTime(0)
+    setCurrentTime(new Date(Date()).getTime())
     setPoseTime(0)
     setBestPerform(0)
+
+    // If and when the pose changes during a sequence,
+    // runMovenet again to detect the correct pose
+    if (isSequence1
+      || isSequence2
+      || isSequence3) {
+      runMovenet()
+      console.log('In a sequence. Detecting ', currentPose, ' pose now.')
+    }
   }, [currentPose])
 
   const CLASS_NO = {
@@ -196,8 +237,9 @@ function Yoga() {
               countAudio.play()
               setStartingTime(new Date(Date()).getTime())
               flag = true
+              console.log('Pose is correctly assumed!')
             }
-            setCurrentTime(new Date(Date()).getTime()) 
+            setCurrentTime(new Date(Date()).getTime())
             skeletonColor = 'rgb(0,255,0)'
           } else {
             flag = false
@@ -222,36 +264,87 @@ function Yoga() {
     clearInterval(interval)
   }
 
+  // When starting a sequence the pose is automatically set to the first pose in the sequence array
   function startSequence1(){
     setIsStartSequence1(true)
-    console.log(isSequence1)
+    setCurrentPose(sequence1Poses[0])
     runMovenet()
   }
 
   function startSequence2(){
     setIsStartSequence2(true)
+    setCurrentPose(sequence2Poses[0])
     runMovenet()
   }
 
   function startSequence3(){
     setIsStartSequence3(true)
+    setCurrentPose(sequence3Poses[0])
     runMovenet()
   }
 
+  // The Step is set to 0 in each method separately so that
+  // it is reset correctly when the user stops the sequence before finishing it
   function stopSequence1() {
     setIsStartSequence1(false)
-    console.log(isSequence1)
     clearInterval(interval)
+    sequenceStep = 0
   }
 
   function stopSequence2() {
     setIsStartSequence2(false)
     clearInterval(interval)
+    sequenceStep = 0
   }
 
   function stopSequence3() {
     setIsStartSequence3(false)
     clearInterval(interval)
+    sequenceStep = 0
+  }
+
+  function changeSequencePose() {
+    // If the sequence is finished, make sure it is stopped
+    if (sequenceStep >= 4) {
+      stopSequence1()
+      stopSequence2()
+      stopSequence3()
+    }
+    // If the sequence is still ongoing, move on to the next pose
+    else {
+      clearInterval(interval)
+      if (isSequence1) {
+        setCurrentPose(sequence1Poses[++sequenceStep])
+      }
+      else if (isSequence2) {
+        setCurrentPose(sequence2Poses[++sequenceStep])
+      }
+      else if (isSequence3) {
+        setCurrentPose(sequence3Poses[++sequenceStep])
+      }
+    }
+  }
+
+  // Checks when the pose timer changes,
+  // when it reaches a certain amount it will change the pose in the sequence.
+  useEffect(() => {
+    // CHANGE THIS NUMBER TO CHANGE HOW LONG EACH POSE NEEDS TO BE HELD FOR IN ORDER TO PROGRESS
+    if ((isSequence1
+      || isSequence2
+      || isSequence3)
+      && poseTime >= 8) {
+      console.log('Pose change triggered.')
+      setPoseTime(0)
+      changeSequencePose()
+    }
+  }, [poseTime])
+
+  // Helper function that increases timer manually when clicked, eases testing
+  // Can be deleted
+  // * Make sure to delete the marked onClick Events on the timer elements below
+  // Or to add the event if you want to use it in sequence 2 or 3
+  function faker() {
+    setPoseTime(poseTime + 1)
   }
 
   //Normal poses
@@ -259,7 +352,9 @@ function Yoga() {
     return (
       <div className="yoga-container">
         <div className="performance-container">
-            <div className="pose-performance">
+            <div className="pose-performance"
+              onClick={faker}                                // * onClick EVENT HERE
+              >
               <h4>Pose Time: {poseTime} s</h4>
             </div>
             <div className="pose-performance">
@@ -313,27 +408,26 @@ function Yoga() {
     return (
       <div className="yoga-container">
         <div className="performance-container">
-            <div className="pose-performance">
-              <h4>Pose Time: {poseTime} s</h4>
-            </div>
-            <div className="pose-performance">
-              <h4>Best: {bestPerform} s</h4>
-            </div>
+          <div className="pose-performance"
+            onClick={faker}                                  // * onClick EVENT HERE
+            >
+            <h4>Pose Time: {poseTime} s</h4>
           </div>
+        </div>
         <div>
           
           <Webcam 
-          width='640px'
-          height='480px'
-          id="webcam"
-          ref={webcamRef}
-          style={{
-            position: 'absolute',
-            left: 120,
-            top: 100,
-            padding: '0px',
-          }}
-        />
+            width='640px'
+            height='480px'
+            id="webcam"
+            ref={webcamRef}
+            style={{
+              position: 'absolute',
+              left: 120,
+              top: 100,
+              padding: '0px',
+            }}
+          />
           <canvas
             ref={canvasRef}
             id="my-canvas"
@@ -347,6 +441,12 @@ function Yoga() {
             }}
           >
           </canvas>
+        <div>
+          <img
+            src={poseImages[currentPose]}
+            className="pose-img"
+          />
+        </div>
         </div>
         <button
           onClick={stopSequence1}
@@ -394,6 +494,12 @@ function Yoga() {
             }}
           >
           </canvas>
+        <div>
+          <img
+            src={poseImages[currentPose]}
+            className="pose-img"
+          />
+        </div>
         </div>
         <button
           onClick={stopSequence2}
@@ -442,6 +548,12 @@ function Yoga() {
             }}
           >
           </canvas>
+        <div>
+          <img
+            src={poseImages[currentPose]}
+            className="pose-img"
+          />
+        </div>
         </div>
         <button
           onClick={stopSequence3}
