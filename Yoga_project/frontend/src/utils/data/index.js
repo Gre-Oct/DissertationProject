@@ -1,9 +1,9 @@
 export const poseInstructions = {
     Tree: [
         'Get into position. Tree pose often starts from mountain pose (or Tadasana), with both feet planted firmly on the ground and your weight adequately distributed so that you are balanced.',
-        'Bend one leg at the knee. Choose the leg you are going to fold in first. If your left leg is your standing leg, keep your left foot planted on the ground, and slowly bend in your right leg at the right knee so that the sole of your right foot rests against your left inner thigh (known as the half-lotus position in Bikram yoga). Point the knee of your bent leg outward, away from your body.',
-        'Lengthen your body. Clasp your hands together in Anjali Mudra (also called the “prayer position”)',
-        'Hold and repeat. Hold the pose for as long as necessary, making sure to breathe properly. When you’re ready to switch legs, exhale, and return to mountain pose to start again.'
+        'Bend one leg at the knee. Choose the leg you are going to fold in first. If your left leg is your standing leg, keep your left foot planted on the ground, and slowly bend in your right leg at the right knee so that the sole of your right foot rests against your left inner thigh or below the knee on your left inner shin. Point the knee of your bent leg outward, away from your body.',
+        'Lengthen your body upwards. Clasp your hands together in Anjali Mudra (also called the “prayer position”) and lower your hands in the prayer position until they reach your chest',
+        'Hold and repeat. Hold the pose for 7 seconds, making sure to breathe properly. When you’re ready, you can return to mountain pose to start again.'
         ],
     // Cobra: [
     //     'Lie prone on the floor. Stretch your legs back, tops of the feet on the floor. Spread your hands on the floor under your shoulders. Hug the elbows back into your body.',
@@ -24,8 +24,7 @@ export const poseInstructions = {
     Chair: [
         'Stand straight and tall with your feet slightly wider than hip­-width apart and your arms at your sides.',
         'Inhale and lift your arms next to your ears, stretching them straight and parallel with wrists and fingers long. Keep your shoulders down and spine neutral.',
-        'Exhale as you bend your knees, keeping your thighs and knees parallel. Lean your torso forward to create a right angle with the tops of your thighs. Keep your neck and head in line with your torso and arms. Hold for 30 seconds to 1 minute.',
-        'Source: classpass - https://classpass.com/movements/chair-pose'
+        'Exhale as you bend your knees, keeping your thighs and knees parallel. Lean your torso forward to create a right angle with the tops of your thighs. Keep your neck and head in line with your torso and arms. Hold for 7 seconds.'
     ],
     // Warrior: [
     //     'Begin in lunge with your front knee bent, your back leg straight and your back heel lifted. Your hips and chest should be squared to front of the mat. Raise your arms above your head.',
@@ -34,10 +33,9 @@ export const poseInstructions = {
     //     'Source classpass - https://classpass.com/movements/warrior-3-pose'
     // ],
     Triangle: [
-        'Begin standing, then lightly jump your feet apart to a wide position about three to four feet apart. Turn your left foot out and turn to face that direction. Take a slight bend in your left leg and raise your arms out on your sides, forming a “T” shape.',
-        'Straighten through your left leg, then hinge and reach your torso over your left leg as your hips jut back. Rotate your left palm so it faces the ceiling, and gaze out over your left arm.',
-        'Maintain a long, straight spine as you reach your left hand to the mat, placing it in front of your left foot. If you feel off balance, bring in your back leg closer to shorten your stance. Gaze towards your right arm, which should be extended overhead. Hold and repeat on the other side.',
-        'Source classpass - https://classpass.com/movements/triangle-pose'
+        'Begin standing, then lightly jump your feet apart to a wide position. Turn your left foot out and turn to face that direction, moving your entire torso. Take a slight bend in your left leg and raise your arms out on your sides, forming a “T” shape.',
+        'Straighten through your left leg, , looking upwards, towards your palm.',
+        'Maintain a long, straight spine as you reach your left hand to the floor, placing it in front of your left foot. If you feel off balance, bring in your back leg closer to shorten your stance. Gaze towards your right arm, which should be extended overhead.'
     ]
     // Shoulderstand: [
     //     'Start with a stack of two folded blankets. Lay down on your mat aligning shoulders onto the blankets. With legs bent and feet on the floor (as if setting up for bridge pose) begin to walk your shoulders underneath your upper back feeling the chest gently rising.',
@@ -57,7 +55,8 @@ export const tutorials = [
     '2. Select a pose from the dropdown menu.',
     '3. Read the instructions for the specific pose that you want to perform.',
     '4. Click on the Start Pose button and try to replicate in front of the camera the pose displayed in the image on the right side.',
-    '5. If the pose is done correctly, the skeleton will turn green and a sound will start playing.'
+    '5. If the pose is done correctly, the skeleton will turn green and a sound will start playing.',
+    '6. Press on one of the Sequence buttons to start a sequence of 5 poses.'
 ]
 
 export const fixCamera = [

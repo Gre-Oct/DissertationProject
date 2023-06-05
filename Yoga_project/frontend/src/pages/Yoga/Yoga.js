@@ -54,27 +54,27 @@ function Yoga() {
   // 'Tree'
 
   const sequence1Poses = [
-    poseList[0],
-    poseList[1],
-    poseList[2],
-    poseList[1],
-    poseList[0]
+    poseList[0], //Tree
+    poseList[1], //Chair
+    poseList[2], //Triangle
+    poseList[1], //Chair
+    poseList[0]  //Tree
   ]
   
   const sequence2Poses = [
-    poseList[2],
-    poseList[1],
-    poseList[0],
-    poseList[1],
-    poseList[2]
+    poseList[2], //Triangle
+    poseList[1], //Chair
+    poseList[0], //Tree
+    poseList[1], //Chair
+    poseList[2]  //Triangle
   ]
 
   const sequence3Poses = [
-    poseList[1],
-    poseList[0],
-    poseList[2],
-    poseList[0],
-    poseList[1]
+    poseList[1], //Chair
+    poseList[0], //Tree
+    poseList[2], //Triangle
+    poseList[0], //Tree
+    poseList[1]  //Chair
   ]
   
   useEffect(() => {
@@ -460,13 +460,12 @@ function Yoga() {
     return (
       <div className="yoga-container">
         <div className="performance-container">
-            <div className="pose-performance">
-              <h4>Pose Time: {poseTime} s</h4>
-            </div>
-            <div className="pose-performance">
-              <h4>Best: {bestPerform} s</h4>
-            </div>
+          <div className="pose-performance"
+            onClick={faker}
+            >
+            <h4>Pose Time: {poseTime} s</h4>
           </div>
+        </div>
         <div>
           
           <Webcam 
@@ -514,13 +513,12 @@ function Yoga() {
     return (
       <div className="yoga-container">
         <div className="performance-container">
-            <div className="pose-performance">
-              <h4>Pose Time: {poseTime} s</h4>
-            </div>
-            <div className="pose-performance">
-              <h4>Best: {bestPerform} s</h4>
-            </div>
+          <div className="pose-performance"
+            onClick={faker}                                  // * onClick EVENT HERE
+            >
+            <h4>Pose Time: {poseTime} s</h4>
           </div>
+        </div>
         <div>
           
           <Webcam 
